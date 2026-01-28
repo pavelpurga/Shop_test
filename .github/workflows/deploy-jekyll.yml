@@ -23,17 +23,37 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
 
-      - name: Install Jekyll dependencies
+      - name: Install Jekyll dependencies or fallback
         run: |
-          # use docs/ as source if it exists, otherwise repo root
-          if [ -d docs ]; then cd docs; fi
-          bundle config set --local path 'vendor/bundle'
-          bundle install --jobs 4 --retry 3
+          # determine source dir: docs/ if exists, otherwise repo root
+          if [ -d docs ]; then SRC=docs; else SRC=.; fi
+          echo "Source dir: $SRC"
+          # If Gemfile exists in source, use bundler, otherwise install jekyll gem globally
+          if [ -f "$SRC/Gemfile" ]; then
+            echo "Gemfile found in $SRC — using Bundler"
+            cd "$SRC"
+            bundle config set --local path 'vendor/bundle'
+            bundle install --jobs 4 --retry 3
+          else
+            echo "No Gemfile found in $SRC — installing jekyll gem"
+            gem install jekyll bundler --no-document
+          fi
 
       - name: Build Jekyll site
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           if [ -d docs ]; then SRC=docs; else SRC=.; fi
-          bundle exec jekyll build --source "$SRC" --destination ./_site
+          DEST="$GITHUB_WORKSPACE/_site"
+          echo "Building from: $SRC to $DEST"
+          if [ -f "$SRC/Gemfile" ]; then
+            echo "Building with bundle exec"
+            cd "$SRC"
+            bundle exec jekyll build --destination "$DEST"
+          else
+            echo "Building with system jekyll"
+            jekyll build --source "$SRC" --destination "$DEST"
+          fi
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
