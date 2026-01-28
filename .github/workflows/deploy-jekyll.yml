@@ -1,0 +1,44 @@
+name: Deploy Jekyll site to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  build-and-deploy-jekyll:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Install Jekyll dependencies
+        run: |
+          # use docs/ as source if it exists, otherwise repo root
+          if [ -d docs ]; then cd docs; fi
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
+
+      - name: Build Jekyll site
+        run: |
+          if [ -d docs ]; then SRC=docs; else SRC=.; fi
+          bundle exec jekyll build --source "$SRC" --destination ./_site
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+
