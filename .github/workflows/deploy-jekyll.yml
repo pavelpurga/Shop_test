@@ -72,9 +72,10 @@ jobs:
           echo "Repo permissions:"
           curl -s -H "Authorization: token ${{ secrets.GH_PAGES_PAT }}" https://api.github.com/repos/${{ github.repository }} || echo "Repo info request failed"
 
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          personal_token: ${{ secrets.GH_PAGES_PAT }}
-          publish_dir: ./_site
-          publish_branch: gh-pages
+          path: ./_site
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
