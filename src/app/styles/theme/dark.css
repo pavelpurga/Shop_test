@@ -1,0 +1,19 @@
+.theme-dark {
+    --bg: #0b1117;
+    --surface: #0f1724;
+
+    --text: #e6eef8;
+    --text-strong: #f3f7fb;
+    --muted: #9aa6b2;
+
+    --primary: #1565C0;
+    --primary-contrasted: #f3f7fb;
+
+    --control-border: rgba(148, 163, 184, 0.22);
+    --control-hover: rgba(148, 163, 184, 0.04);
+    --divider: rgba(255, 255, 255, 0.04);
+
+    --sun-color: #FFB300;
+    --moon-color: #cfe4ff;
+}
+
