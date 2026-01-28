@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+# Sitemap: add your sitemap URL here if available, e.g.
+# Sitemap: https://example.com/sitemap.xml
+

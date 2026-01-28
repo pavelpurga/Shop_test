@@ -1,0 +1,1 @@
+import{useContext as r}from"react";import{T as o}from"./index-Di5wKr4I.js";const t=()=>{const t=r(o);if(!t)throw new Error("useToast must be used within ToastProvider");return t},s=r=>`$${r.toFixed(2)}`;export{s as f,t as u};
