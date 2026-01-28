@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shop Test</title>
+    <meta name="description" content="Shop Test — простой каталог товаров с корзиной."/>
+    <link rel="preconnect" href="https://images.weserv.nl" crossorigin>
+    <link rel="preconnect" href="https://fakestoreapi.com">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" as="script"
+          crossorigin="anonymous">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" as="script"
+          crossorigin="anonymous">
+    <script defer crossorigin="anonymous"
+            src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script defer crossorigin="anonymous"
+            src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script type="module" crossorigin src="/assets/index-C4QQhsHo.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-n7IZm_CJ.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-dom-BfFcrGEP.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-hoist-non-react-statics-CPjjL7Uz.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-is-5aUQDKM9.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-use-sync-external-store-DGGPgjKm.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-redux-z6RaQqsA.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-remix-run-router-D2S8Huhy.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-router-C_xiOQr5.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-router-dom-BKKPtqm6.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-immer-DPu_YifG.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-babel-runtime-BUpXcjck.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-redux-Bj2yg0yM.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-redux-thunk-DIFYAu7O.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-reduxjs-toolkit-CMYZ2rVd.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-vH6MDIw0.css">
+</head>
+<body>
+<div id="root"></div>
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            try {
+                const links = Array.from(document.querySelectorAll('link[rel="preload"][as="image"]'))
+                links.forEach(l => {
+                    const href = l.getAttribute('href') || ''
+                    if (href.includes('images.weserv.nl')) {
+                        l.parentNode && l.parentNode.removeChild(l)
+                    }
+                })
+            } catch (e) {
+
+            }
+        }, 2000)
+    })
+</script>
+</body>
+</html>
