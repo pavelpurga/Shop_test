@@ -1,0 +1,14 @@
+:root {
+    --card: var(--surface);
+    --control-border: rgba(100, 116, 139, 0.18);
+
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+
+    --skeleton-light: #f3f4f6;
+    --skeleton-mid: #e5e7eb;
+
+    --divider: rgba(15, 23, 36, 0.06);
+}
+
