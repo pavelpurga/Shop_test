@@ -55,10 +55,20 @@ jobs:
             jekyll build --source "$SRC" --destination "$DEST"
           fi
 
+      - name: "Debug: verify GH_PAGES_PAT and repo permissions"
+        if: ${{ always() }}
+        run: |
+          echo "Checking GH_PAGES_PAT availability and permissions"
+          apt-get update -y
+          apt-get install -y jq
+          echo "Token user info:"
+          curl -s -H "Authorization: token ${{ secrets.GH_PAGES_PAT }}" https://api.github.com/user | jq '{login, id, type, name}' || true
+          echo "Repo permissions:"
+          curl -s -H "Authorization: token ${{ secrets.GH_PAGES_PAT }}" https://api.github.com/repos/${{ github.repository }} | jq '.permissions' || true
+
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GH_PAGES_PAT }}
           publish_dir: ./_site
           publish_branch: gh-pages
-
