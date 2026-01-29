@@ -36,7 +36,11 @@ jobs:
         run: |
           REPO_NAME=${GITHUB_REPOSITORY#*/}
           echo "Computed repo name: $REPO_NAME"
-          echo "VITE_BASE=/${REPO_NAME}/" >> $GITHUB_ENV
+          # export VITE_BASE for the current shell so npm run build sees it
+          export VITE_BASE="/${REPO_NAME}/"
+          echo "VITE_BASE=$VITE_BASE"
+          # also persist for later steps
+          echo "VITE_BASE=$VITE_BASE" >> $GITHUB_ENV
           npm run build
 
       - name: Verify PAT can access repo (diagnostic)
