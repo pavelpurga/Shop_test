@@ -40,7 +40,6 @@ jobs:
           npm run build
 
       - name: Verify PAT can access repo (diagnostic)
-        if: ${{ secrets.GH_PAGES_PAT != '' }}
         env:
           GH_PAT: ${{ secrets.GH_PAGES_PAT }}
         run: |
