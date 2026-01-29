@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # use the personal access token for git operations (so push from action uses this token)
+          token: ${{ secrets.GH_PAGES_PAT }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,6 +38,15 @@ jobs:
           echo "Computed repo name: $REPO_NAME"
           echo "VITE_BASE=/${REPO_NAME}/" >> $GITHUB_ENV
           npm run build
+
+      - name: Verify PAT can access repo (diagnostic)
+        if: ${{ secrets.GH_PAGES_PAT != '' }}
+        env:
+          GH_PAT: ${{ secrets.GH_PAGES_PAT }}
+        run: |
+          echo "Checking PAT access (token will be masked in logs)"
+          # Verify we can reach the remote and list refs using the PAT
+          git ls-remote https://x-access-token:${GH_PAT}@github.com/${{ github.repository }} | head -n 5
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
