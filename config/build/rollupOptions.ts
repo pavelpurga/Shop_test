@@ -1,5 +1,5 @@
 export const createRollupOptions = () => ({
-  external: ['react', 'react-dom'],
+  // don't mark react/react-dom as external so they are bundled into the final build
   output: {
     globals: {
       react: 'React',
@@ -13,7 +13,7 @@ export const createRollupOptions = () => ({
       if (scopedMatch) {
           pkg = scopedMatch[0].split(/[\\/]/).slice(1).join('/')
       } else {
-        const match = id.match(/node_modules[\\/]([^\\/]+)/)
+        const match = id.match(/node_modules[\\/]([^\/]+)/)
         if (match) pkg = match[1]
       }
 
@@ -24,4 +24,3 @@ export const createRollupOptions = () => ({
     chunkFileNames: 'assets/[name]-[hash].js',
   },
 })
-
