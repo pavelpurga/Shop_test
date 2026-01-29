@@ -1,4 +1,4 @@
-name: Deploy Jekyll site to GitHub Pages
+name: Deploy site to GitHub Pages
 
 on:
   push:
@@ -6,76 +6,67 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy-jekyll:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          ruby-version: '3.1'
-          bundler-cache: true
+          node-version: '18'
 
-      - name: Install Jekyll dependencies or fallback
+      - name: Install dependencies (if package.json exists)
+        if: always()
         run: |
-          # determine source dir: docs/ if exists, otherwise repo root
-          if [ -d docs ]; then SRC=docs; else SRC=.; fi
-          echo "Source dir: $SRC"
-          # If Gemfile exists in source, use bundler, otherwise install jekyll gem globally
-          if [ -f "$SRC/Gemfile" ]; then
-            echo "Gemfile found in $SRC — using Bundler"
-            cd "$SRC"
-            bundle config set --local path 'vendor/bundle'
-            bundle install --jobs 4 --retry 3
+          if [ -f package.json ]; then
+            npm ci
           else
-            echo "No Gemfile found in $SRC — installing jekyll gem"
-            gem install jekyll bundler --no-document
+            echo "No package.json — skipping npm install"
           fi
 
-      - name: Build Jekyll site
+      - name: Build site (Vite)
+        if: always()
         env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          if [ -d docs ]; then SRC=docs; else SRC=.; fi
-          DEST="$GITHUB_WORKSPACE/_site"
-          echo "Building from: $SRC to $DEST"
-          if [ -f "$SRC/Gemfile" ]; then
-            echo "Building with bundle exec"
-            cd "$SRC"
-            bundle exec jekyll build --destination "$DEST"
+          # If project contains a Vite build, compute repo name and set VITE_BASE so assets use the repo subpath
+          if [ -f package.json ] && grep -q "vite build" package.json; then
+            REPO_NAME=${GITHUB_REPOSITORY#*/}
+            echo "Computed repo name: $REPO_NAME"
+            export VITE_BASE="/$REPO_NAME/"
+            echo "VITE_BASE=$VITE_BASE"
+            # export for npm scripts
+            echo "VITE_BASE=$VITE_BASE" >> $GITHUB_ENV
+            npm run build
           else
-            echo "Building with system jekyll"
-            jekyll build --source "$SRC" --destination "$DEST"
+            echo "No Vite build detected — skipping build"
           fi
 
-      - name: "Debug: verify GH_PAGES_PAT and repo permissions"
-        if: ${{ always() }}
+      - name: Prepare publish directory
         run: |
-          echo "Checking GH_PAGES_PAT availability and permissions"
-          # Check if secret is available in this run
-          if [ -z "${{ secrets.GH_PAGES_PAT }}" ]; then
-            echo "GH_PAGES_PAT is not set or not available in this workflow run"
+          if [ -d dist ]; then
+            echo "PUBLISH_DIR=dist" >> $GITHUB_ENV
+          elif [ -d docs ]; then
+            echo "PUBLISH_DIR=docs" >> $GITHUB_ENV
+          elif [ -d _site ]; then
+            echo "PUBLISH_DIR=_site" >> $GITHUB_ENV
           else
-            echo "GH_PAGES_PAT appears to be set (value is masked)"
+            echo "No publish directory found (dist, docs or _site)" && exit 1
           fi
+          echo "Will publish: $PUBLISH_DIR"
 
-          echo "Token user info:"
-          curl -s -H "Authorization: token ${{ secrets.GH_PAGES_PAT }}" https://api.github.com/user || echo "User info request failed"
-
-          echo "Repo permissions:"
-          curl -s -H "Authorization: token ${{ secrets.GH_PAGES_PAT }}" https://api.github.com/repos/${{ github.repository }} || echo "Repo info request failed"
-
-      - name: Deploy to gh-pages branch (using PAT)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v2
         with:
-          personal_token: ${{ secrets.GH_PAGES_PAT }}
-          publish_dir: ./_site
-          publish_branch: gh-pages
-          # optional: keep_files: true
+          path: ${{ env.PUBLISH_DIR }}
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
