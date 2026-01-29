@@ -1,0 +1,1 @@
+import{r}from"./vendor-react-lW2-BiOG.js";import{T as o}from"./index-BZEKFoVF.js";const t=()=>{const t=r.useContext(o);if(!t)throw new Error("useToast must be used within ToastProvider");return t},s=r=>`$${r.toFixed(2)}`;export{s as f,t as u};
